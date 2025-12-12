@@ -3,6 +3,7 @@ import time as t
 import pandas as pd
 from bs4 import BeautifulSoup
 import json
+from pyvirtualdisplay import Display
 
 ## TODO Create frontend and connect to backend using flask. Run using this xvfb-run -a -s "-screen 0 1920x1080x24" python3 your_script.py
 
@@ -20,8 +21,11 @@ def make_url(location='Austin_TX', beds=None, baths=None):
 
 
 def scrape_url(url):
-    driver = uc.Chrome(headless=False,use_subprocess=False)
+    # Setting up headless display
+    display = Display(visible=False, size=(1920, 1080))
+    display.start()
 
+    driver = uc.Chrome(headless=False,use_subprocess=False)
 
     # Storing information
     results = []
@@ -144,9 +148,7 @@ def scrape_url(url):
     finally:
         driver.quit()
 
-    json_dump = json.dumps(results,indent=2)
-    df = pd.read_json(json_dump)
-    df.to_csv('data.csv', index=False)
+    return results
             
 
     
