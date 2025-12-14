@@ -4,9 +4,11 @@ import pandas as pd
 import json
 from flask_cors import CORS
 
+# Initializes Flask app
 app = Flask(__name__)
 CORS(app)
 
+# Adds post route for scraper
 @app.route('/scrape', methods=['POST'])
 def scrape():
     """

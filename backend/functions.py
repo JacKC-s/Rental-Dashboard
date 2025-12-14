@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import json
 from pyvirtualdisplay import Display
 
-## TODO Create frontend and connect to backend using flask. Run using this xvfb-run -a -s "-screen 0 1920x1080x24" python3 your_script.py
+## TODO Potentially Speed up scraper..?
 
 def make_url(location='Austin_TX', beds=None, baths=None):
     match beds, baths:
@@ -58,7 +58,7 @@ def scrape_url(url):
                 # Scrolls the page by 1/7th max height
                 driver.execute_script(f"window.scrollBy(0, {last_height/7});")
 
-                t.sleep(0.5)
+                # t.sleep(0.5)
                 # Scan through the listings and append them to a data frame in pandas, figure out how to add to database
                 html = driver.page_source
                 soup = BeautifulSoup(html, "html.parser")
@@ -144,7 +144,7 @@ def scrape_url(url):
 
             # Increments page
             pg = pg + 1
-            t.sleep(3)
+            # t.sleep(3)
     finally:
         driver.quit()
 
