@@ -5,7 +5,13 @@ from bs4 import BeautifulSoup
 import json
 from pyvirtualdisplay import Display
 
-## TODO Potentially Speed up scraper..?
+## TODO fix line 41 to line 60
+
+# Visual progress bar
+def progress_bar(progress, total):
+    percent = 100 * (progress / total) 
+    bar = '█' * int(percent) + '-' * (100 - int(percent)) 
+    print(f"\r|{bar}| {percent:.2f}%", end = "\r")
 
 def make_url(location='Austin_TX', beds=None, baths=None):
     match beds, baths:
@@ -26,16 +32,43 @@ def scrape_url(url):
     display.start()
 
     driver = uc.Chrome(headless=False,use_subprocess=False)
+    driver.get(url)
 
     # Storing information
     results = []
     seen_links = set()
     
+    # Finding number of pages
+    # base_html = driver.page_source
+    # base_soup = BeautifulSoup(base_html, "html.parser")
+    # while True:
+    #     try:
+            
+    #         container = base_soup.find("div", attrs={
+    #         "aria-label": "pagination",
+    #         "role": "navigation"
+    #         })
+
+    #         # card_list = []
+    #         # for a in container.find_all('a', class_='pagination-item'):
+    #         #     page_num = int(a.text)
+    #         #     print(page_num)
+    #         if container is not None:
+    #             print(container)
+    #             break
+    #     except Exception as e:
+    #         print(e)
+        
+            
+
     pg = 1
     last_page = False
+    driver.execute_script("window.scrollTo(0, 0);")
 
     try: 
         while True:
+            # Introducing progress bar
+
             # Finds out if the page is the last page
             if last_page:
                 break
@@ -54,7 +87,6 @@ def scrape_url(url):
 
 
             while True:
-                
                 # Scrolls the page by 1/7th max height
                 driver.execute_script(f"window.scrollBy(0, {last_height/7});")
 
@@ -116,7 +148,7 @@ def scrape_url(url):
                         sqft = int(sqft.replace(',', '').split('sqft')[0])
 
                     except Exception as e:
-                        print(e)
+                        # print(e)
                         price = None
 
                     if price is None:
