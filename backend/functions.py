@@ -4,8 +4,27 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import json
 from pyvirtualdisplay import Display
+import subprocess
+import os
+import signal
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 
-## TODO fix line 41 to line 60
+
+## TODO Perhaps fix the page scrolling behavior, and look into xvfb on x-org instead of hyprland
+
+# Start and stop XVFB
+def start_xvfb():
+    process = subprocess.Popen(['Xvfb', ':99', '-screen', '0', '1920x1080x24'])
+    os.environ['DISPLAY'] = ':99'
+    return process
+
+def stop_xvfb(process):
+    process.send_signal(signal.SIGTERM)
+    process.wait()
+
 
 # Visual progress bar
 def progress_bar(progress, total):
@@ -28,37 +47,31 @@ def make_url(location='Austin_TX', beds=None, baths=None):
 
 def scrape_url(url):
     # Setting up headless display
+    xvfb = start_xvfb()
     display = Display(visible=False, size=(1920, 1080))
     display.start()
 
-    driver = uc.Chrome(headless=False,use_subprocess=False)
+    # Setting up web driver
+    options = Options()
+    # Massively Speeds up scraping process
+    options.page_load_strategy = 'eager'
+
+    driver = uc.Chrome(headless=False,use_subprocess=False, options=options)
     driver.get(url)
+
+    # Handles Error where closes instantly
+    wait = WebDriverWait(driver, 15)
+    wait.until(
+        EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '.CardContentstyles__StyledCardContent-rui__m7hjnf-0')
+        )
+    )
 
     # Storing information
     results = []
     seen_links = set()
+    total_pages = 0
     
-    # Finding number of pages
-    # base_html = driver.page_source
-    # base_soup = BeautifulSoup(base_html, "html.parser")
-    # while True:
-    #     try:
-            
-    #         container = base_soup.find("div", attrs={
-    #         "aria-label": "pagination",
-    #         "role": "navigation"
-    #         })
-
-    #         # card_list = []
-    #         # for a in container.find_all('a', class_='pagination-item'):
-    #         #     page_num = int(a.text)
-    #         #     print(page_num)
-    #         if container is not None:
-    #             print(container)
-    #             break
-    #     except Exception as e:
-    #         print(e)
-        
             
 
     pg = 1
@@ -171,6 +184,13 @@ def scrape_url(url):
                 # Checking for new height
                 new_height = driver.execute_script("return document.body.scrollHeight")
                 if new_height == last_height:
+                    if total_pages == 0:
+                        card_list = []
+                        pages = soup.find_all(class_="base__StyledAnchor-rui__sc-7dk5je-0 gOIZFL pagination-item")
+                        for page in pages:
+                            card_list.append(int(page.get_text(strip=True)))
+                        print(max(card_list))
+                        total_pages = max(card_list)
                     break
                 last_height = new_height
 
@@ -179,6 +199,7 @@ def scrape_url(url):
             # t.sleep(3)
     finally:
         driver.quit()
+        stop_xvfb(xvfb)
 
     return results
             
