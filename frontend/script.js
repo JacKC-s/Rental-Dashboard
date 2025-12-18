@@ -1,4 +1,4 @@
-//// TODO: Implement REDIS
+//// TODO: Implement REDIS -> this is on the back end I believe...
 async function getScrapeData(location, beds, baths) {
     // The local url
     const url = "http://localhost:4999/scrape";
@@ -68,7 +68,12 @@ async function handleButtonClick(e) {
 }
 
 // Adding event Listener for content loading
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("scrape");
-    form.addEventListener("submit", handleButtonClick);
-});
+if (typeof(window) != "undefined"){
+    window.onload= function() {
+        document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("scrape");
+        form.addEventListener("submit", handleButtonClick);
+    });
+    }
+}
+

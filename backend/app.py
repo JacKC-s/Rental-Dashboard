@@ -3,7 +3,7 @@ from functions import make_url, scrape_url
 import pandas as pd
 import json
 from flask_cors import CORS
-
+## TODO Figure out if Redis should be in here or script.js frontend... very confusing indeed...
 # Initializes Flask app
 app = Flask(__name__)
 CORS(app)
