@@ -103,94 +103,93 @@ def scrape_url(url):
                 # Scrolls the page by 1/7th max height
                 driver.execute_script(f"window.scrollBy(0, {last_height/7});")
 
-                # t.sleep(0.5)
-                # Scan through the listings and append them to a data frame in pandas, figure out how to add to database
-                html = driver.page_source
-                soup = BeautifulSoup(html, "html.parser")
-
-                # Deletes unwanted div
-                unwanted = soup.find('div', class_='InRiverBrowseModule_inRiverBrowseModule__EHCdk')
-                if unwanted:
-                    unwanted.decompose()
-
-                # Gather Listings into an array 
-                listings = soup.select(".CardContentstyles__StyledCardContent-rui__m7hjnf-0")
-                print(f"Number of Listings on page {pg}: {len(listings)}")
-                if len(listings) == 0:
-                    last_page = True
-                    break
-
-
-                for listing in listings:
-                    address_elem = listing.find('div', attrs={'data-testid': 'card-address-1'})
-                    price_elem = listing.find("div", attrs={"data-testid": "card-price"})
-                    beds_elem = listing.find('li', attrs={"data-testid": "property-meta-beds"})
-                    baths_elem = listing.find('li', attrs={"data-testid": "property-meta-baths"})
-                    sqft_elem = listing.find('li', attrs={"data-testid": "property-meta-sqft"})
-                    link_elem = listing.find('a', attrs={"data-testid": "card-link"})
-
-                    if not link_elem:
-                        print("Empty (no link)")
-                        continue
-
-                    href = link_elem.get("href")
-                    if not href:
-                        print("Empty (no href)")
-                        continue
-
-                    full_link = "https://realtor.com" + href
-
-                    # Deduplicate
-                    if full_link in seen_links:
-                        continue
-                    seen_links.add(full_link)
-
-                    address = address_elem.get_text(strip=True) if address_elem else None
-                    price = price_elem.get_text(strip=True) if price_elem else None
-                    beds = beds_elem.get_text(strip=True) if beds_elem else None
-                    baths = baths_elem.get_text(strip=True) if baths_elem else None
-                    sqft = sqft_elem.get_text(strip=True) if sqft_elem else None
-
-
-                    try:
-                        # Clean Data
-                        v = int(price.replace("$","").replace(",","").replace("From",""))
-                        price = v if v <= 50000 else None
-                        beds = float(beds.replace("bed",""))
-                        baths = float(baths.replace("bath", ""))
-                        sqft = int(sqft.replace(',', '').split('sqft')[0])
-
-                    except Exception as e:
-                        # print(e)
-                        price = None
-
-                    if price is None:
-                        continue
-
-                    # Store listing data
-                    results.append({
-                        "address": address,
-                        "rent_price": price,
-                        "link": full_link,
-                        "beds": beds,
-                        "baths": baths,
-                        "sqft": sqft
-                    })
-
-            
-                    
-                    
+                
 
                 # Checking for new height
                 new_height = driver.execute_script("return document.body.scrollHeight")
                 if new_height == last_height:
+                    # t.sleep(0.5)
+                    # Scan through the listings and append them to a data frame in pandas, figure out how to add to database
+                    html = driver.page_source
+                    soup = BeautifulSoup(html, "html.parser")
+
+                    # Deletes unwanted div
+                    unwanted = soup.find('div', class_='InRiverBrowseModule_inRiverBrowseModule__EHCdk')
+                    if unwanted:
+                        unwanted.decompose()
+
+                    # Gather Listings into an array 
+                    listings = soup.select(".CardContentstyles__StyledCardContent-rui__m7hjnf-0")
+                    print(f"Number of Listings on page {pg}: {len(listings)}")
+                    if len(listings) == 0:
+                        last_page = True
+                        break
+
+
+                    for listing in listings:
+                        address_elem = listing.find('div', attrs={'data-testid': 'card-address-1'})
+                        price_elem = listing.find("div", attrs={"data-testid": "card-price"})
+                        beds_elem = listing.find('li', attrs={"data-testid": "property-meta-beds"})
+                        baths_elem = listing.find('li', attrs={"data-testid": "property-meta-baths"})
+                        sqft_elem = listing.find('li', attrs={"data-testid": "property-meta-sqft"})
+                        link_elem = listing.find('a', attrs={"data-testid": "card-link"})
+
+                        if not link_elem:
+                            print("Empty (no link)")
+                            continue
+
+                        href = link_elem.get("href")
+                        if not href:
+                            print("Empty (no href)")
+                            continue
+
+                        full_link = "https://realtor.com" + href
+
+                        # Deduplicate
+                        if full_link in seen_links:
+                            continue
+                        seen_links.add(full_link)
+
+                        address = address_elem.get_text(strip=True) if address_elem else None
+                        price = price_elem.get_text(strip=True) if price_elem else None
+                        beds = beds_elem.get_text(strip=True) if beds_elem else None
+                        baths = baths_elem.get_text(strip=True) if baths_elem else None
+                        sqft = sqft_elem.get_text(strip=True) if sqft_elem else None
+
+
+                        try:
+                            # Clean Data
+                            v = int(price.replace("$","").replace(",","").replace("From",""))
+                            price = v if v <= 50000 else None
+                            beds = float(beds.replace("bed",""))
+                            baths = float(baths.replace("bath", ""))
+                            sqft = int(sqft.replace(',', '').split('sqft')[0])
+
+                        except Exception as e:
+                            # print(e)
+                            price = None
+
+                        if price is None:
+                            continue
+
+                        # Store listing data
+                        results.append({
+                            "address": address,
+                            "rent_price": price,
+                            "link": full_link,
+                            "beds": beds,
+                            "baths": baths,
+                            "sqft": sqft
+                        })
+
                     if total_pages == 0:
                         card_list = []
                         pages = soup.find_all(class_="base__StyledAnchor-rui__sc-7dk5je-0 gOIZFL pagination-item")
-                        for page in pages:
-                            card_list.append(int(page.get_text(strip=True)))
-                        print(max(card_list))
-                        total_pages = max(card_list)
+                        if pages:
+                            for page in pages:
+                                card_list.append(int(page.get_text(strip=True)))
+                            print(max(card_list))
+                            total_pages = max(card_list)
                     break
                 last_height = new_height
 
@@ -198,6 +197,7 @@ def scrape_url(url):
             pg = pg + 1
             # t.sleep(3)
     finally:
+        print(len(results))
         driver.quit()
         stop_xvfb(xvfb)
 
