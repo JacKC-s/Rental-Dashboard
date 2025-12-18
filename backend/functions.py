@@ -26,12 +26,6 @@ def stop_xvfb(process):
     process.wait()
 
 
-# Visual progress bar
-def progress_bar(progress, total):
-    percent = 100 * (progress / total) 
-    bar = '█' * int(percent) + '-' * (100 - int(percent)) 
-    print(f"\r|{bar}| {percent:.2f}%", end = "\r")
-
 def make_url(location='Austin_TX', beds=None, baths=None):
     match beds, baths:
         case None, None:
@@ -59,6 +53,9 @@ def scrape_url(url):
     driver = uc.Chrome(headless=False,use_subprocess=False, options=options)
     driver.get(url)
 
+    # Measures speed of scraper
+    start_time = t.perf_counter()
+
     # Handles Error where closes instantly
     wait = WebDriverWait(driver, 15)
     wait.until(
@@ -80,8 +77,6 @@ def scrape_url(url):
 
     try: 
         while True:
-            # Introducing progress bar
-
             # Finds out if the page is the last page
             if last_page:
                 break
@@ -103,8 +98,6 @@ def scrape_url(url):
                 # Scrolls the page by 1/7th max height
                 driver.execute_script(f"window.scrollBy(0, {last_height/7});")
 
-                
-
                 # Checking for new height
                 new_height = driver.execute_script("return document.body.scrollHeight")
                 if new_height == last_height:
@@ -120,7 +113,7 @@ def scrape_url(url):
 
                     # Gather Listings into an array 
                     listings = soup.select(".CardContentstyles__StyledCardContent-rui__m7hjnf-0")
-                    print(f"Number of Listings on page {pg}: {len(listings)}")
+                    # print(f"Number of Listings on page {pg}: {len(listings)}")
                     if len(listings) == 0:
                         last_page = True
                         break
@@ -135,12 +128,12 @@ def scrape_url(url):
                         link_elem = listing.find('a', attrs={"data-testid": "card-link"})
 
                         if not link_elem:
-                            print("Empty (no link)")
+                            # print("Empty (no link)")
                             continue
 
                         href = link_elem.get("href")
                         if not href:
-                            print("Empty (no href)")
+                            # print("Empty (no href)")
                             continue
 
                         full_link = "https://realtor.com" + href
@@ -194,10 +187,12 @@ def scrape_url(url):
                 last_height = new_height
 
             # Increments page
+            if total_pages > 0:
+                print(f"Page {pg} out of {total_pages} scanned.")
             pg = pg + 1
-            # t.sleep(3)
     finally:
-        print(len(results))
+        end_time = t.perf_counter()
+        print(f"Total Listings Captured: {len(results)} in {end_time - start_time:0.02f} seconds.")
         driver.quit()
         stop_xvfb(xvfb)
 
