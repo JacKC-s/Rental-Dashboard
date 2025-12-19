@@ -68,12 +68,10 @@ async function handleButtonClick(e) {
 }
 
 // Adding event Listener for content loading
-if (typeof(window) != "undefined"){
-    window.onload= function() {
-        document.addEventListener("DOMContentLoaded", () => {
-        const form = document.getElementById("scrape");
-        form.addEventListener("submit", handleButtonClick);
-    });
-    }
-}
+    document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("scrape");
+    form.addEventListener("submit", handleButtonClick);
+});
+
+
 

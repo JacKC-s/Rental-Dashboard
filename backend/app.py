@@ -3,7 +3,16 @@ from functions import make_url, scrape_url
 import pandas as pd
 import json
 from flask_cors import CORS
+import redis
 ## TODO Figure out if Redis should be in here or script.js frontend... very confusing indeed...
+
+# Intitializes Redis
+redis_host = 'localhost'
+redis_port = '6379'
+
+r = redis.StrictRedis(redis_host, redis_port, decode_responses=True)
+
+
 # Initializes Flask app
 app = Flask(__name__)
 CORS(app)
@@ -28,8 +37,12 @@ def scrape():
         beds = data.get('beds', None)
         baths = data.get('baths', None)
 
+        # Makes request to scraper
         url = make_url(location, beds, baths)
         results = scrape_url(url)
+
+        # Caches to redis
+        r.set(f'{location}+{beds}+{baths}', f"{results.data}")
 
         # Return results as a json string
         return jsonify({"status": "success",
