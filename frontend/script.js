@@ -1,4 +1,4 @@
-//// TODO: Implement REDIS -> this is on the back end I believe...
+//// TODO: Clear the list when submit button is pressed, work on front end?
 async function getScrapeData(location, beds, baths) {
     // The local url
     const url = "http://localhost:4999/scrape";
