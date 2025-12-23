@@ -4,6 +4,7 @@ import pandas as pd
 import json
 from flask_cors import CORS
 import redis
+import io
 ## TODO I believe this is complete!
 
 # Intitializes Redis
@@ -64,6 +65,31 @@ def scrape():
         return jsonify({"status": "error", 
                         "message": str(e)
                         }), 500
+
+@app.route('/download-csv', methods=['POST'])
+def download_csv():
+    data = request.get_json()
+    df = pd.read_json(io.StringIO(json.dumps(data)))
+
+    df.to_csv('./frontend-react/src/data.csv', encoding='utf-8', index=False)
+    return "Sent!"
+
+
+@app.route('/download-xlsx', methods=['POST'])
+def download_xlsx():
+    try:
+        data = request.get_json()
+        df = pd.read_json(io.StringIO(json.dumps(data)))
+
+        df.to_excel('./frontend-react/src/data.xlsx')
+        return "Sent!"
+    except Exception as e:
+        print(e) 
+        return "oops!"
+
+       
+
+
 
 # Detects if script is being imported directly
 if __name__ == '__main__':

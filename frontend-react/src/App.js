@@ -4,15 +4,19 @@ import { useState } from 'react';
 import { TextSearch, ChartLine, HardDriveDownload, List } from 'lucide-react';
 import { mean, min, max } from "simple-statistics";
 import { BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import CSV from './data.csv';
+import XLSX from './data.xlsx';
+
 
 //TODO: Add download, listings, and fix errors. Perhaps also add a way to know if it is scraping or not...
 
 // Gloabal Variables
-const API_URL = "http://localhost:4999/scrape";
+const API_URL = "http://192.168.86.34:4999/scrape";
 
 const data = [];
 var query = null;
 
+// Calls scrape api
 const getScrapeData = async (location, beds, baths) => {
     const payload = {
                 "location": location,
@@ -41,6 +45,23 @@ const getScrapeData = async (location, beds, baths) => {
 }   
 }
 
+const convertCsv = (df) => {
+  try {
+    axios.post('http://192.168.86.34:4999/download-csv', df);
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
+
+const convertXlsx = (df) => {
+  try {
+    axios.post('http://192.168.86.34:4999/download-xlsx', df);
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
 
 // Test Case
 const PgOneForm = () => {
@@ -103,6 +124,7 @@ return(
       </div>
       {activeTab === 'home' && <Collection />}
       {activeTab === 'analytics' && <Stats />}
+      {activeTab === 'download' && <DownloadCsv />}
     </div>
     );
 }
@@ -122,6 +144,8 @@ const Collection = () => {
           onSubmit={async (e) => {
             e.preventDefault(); 
             await getScrapeData(location, beds, baths);
+            convertCsv(data);
+            convertXlsx(data);
           }}
           className="space-y-6"
         >
@@ -216,10 +240,11 @@ const Stats = () => {
     }
 
 
-    
+    // Maps chart data to a list that can be read by Barchart Class
     const chartData = Object.entries(distribution)
     .map(([label, count]) => ({'label': label, 'count': count}));
     console.log(chartData);
+
     // Statistical Analysis Page
     return(
     <div className="p-8">
@@ -276,6 +301,30 @@ const Stats = () => {
     </div>
   );
 }
+
+const DownloadCsv = () => {
+  return(
+    <div>
+      <a
+        href={CSV}
+        download="data"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <button>Download as .csv</button>
+      </a>
+      <a
+        href={XLSX}
+        download="data"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <button>Download as .xlsx</button>
+      </a>
+    </div>
+  );
+}
+
 
 const App = () => {
     return(
