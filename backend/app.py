@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from functions import make_url, scrape_url
 import pandas as pd
 import json
@@ -66,27 +66,41 @@ def scrape():
                         "message": str(e)
                         }), 500
 
-@app.route('/download-csv', methods=['POST'])
-def download_csv():
+# Handles Generation and Download of data in different formats
+@app.route('/convert-csv', methods=['POST'])
+def convert_csv():
     data = request.get_json()
     df = pd.read_json(io.StringIO(json.dumps(data)))
 
-    df.to_csv('./frontend-react/src/data.csv', encoding='utf-8', index=False)
+    df.to_csv('./backend/downloads/data.csv', encoding='utf-8', index=False)
     return "Sent!"
 
 
-@app.route('/download-xlsx', methods=['POST'])
-def download_xlsx():
+@app.route('/convert-xlsx', methods=['POST'])
+def convert_xlsx():
     try:
         data = request.get_json()
         df = pd.read_json(io.StringIO(json.dumps(data)))
 
-        df.to_excel('./frontend-react/src/data.xlsx')
+        df.to_excel('./backend/downloads/data.xlsx')
         return "Sent!"
     except Exception as e:
         print(e) 
         return "oops!"
 
+@app.route('/download-csv', methods=['GET'])
+def download_csv():
+    try:
+        return send_file('downloads/data.csv', as_attachment=True)
+    except Exception as e:
+        return(e)
+
+@app.route('/download-xlsx', methods=['GET'])
+def download_xlsx():
+    try:
+        return send_file('downloads/data.xlsx', as_attachment=True)
+    except Exception as e:
+        return(e)
        
 
 

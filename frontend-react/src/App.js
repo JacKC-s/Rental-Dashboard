@@ -4,14 +4,13 @@ import { useState } from 'react';
 import { TextSearch, ChartLine, HardDriveDownload, List } from 'lucide-react';
 import { mean, min, max } from "simple-statistics";
 import { BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import CSV from './data.csv';
-import XLSX from './data.xlsx';
 
 
-//TODO: Add download, listings, and fix errors. Perhaps also add a way to know if it is scraping or not...
+
+//TODO: Comment Confusing Code, finish out the project. Perhaps also add a way to know if it is scraping or not...
 
 // Gloabal Variables
-const API_URL = "http://192.168.86.34:4999/scrape";
+const API_URL = "http://192.168.86.34:4999";
 
 const data = [];
 var query = null;
@@ -25,7 +24,7 @@ const getScrapeData = async (location, beds, baths) => {
             }
     query = payload;
     try {
-        const response = await axios.post(API_URL, payload);
+        const response = await axios.post(API_URL + "/scrape", payload);
         const listings = response.data.data;
         console.log(listings);
         // Clears data list Each time
@@ -40,23 +39,24 @@ const getScrapeData = async (location, beds, baths) => {
                 sqft: listings[index].sqft
             });
         }
+        console.log(data);
 } catch (error) {
     console.log(error);
 }   
 }
-
+// Convert CSV
 const convertCsv = (df) => {
   try {
-    axios.post('http://192.168.86.34:4999/download-csv', df);
+    axios.post(API_URL + '/convert-csv', df);
   }
   catch (error) {
     console.error(error);
   }
 }
-
+// Convert Xlsx
 const convertXlsx = (df) => {
   try {
-    axios.post('http://192.168.86.34:4999/download-xlsx', df);
+    axios.post(API_URL + '/convert-xlsx', df);
   }
   catch (error) {
     console.error(error);
@@ -100,7 +100,7 @@ return(
         {/*Menu Bar*/}
       <div className="w-64 border-r border-gray-200 p-4">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">Simple Rental Dashboard</h1>
+          <h1 className="text-center text-2xl font-bold text-gray-800">Simple Rental Dashboard</h1>
         </div>
         <nav className="space-y-2">
           {tabs.map((tab) => {
@@ -122,9 +122,12 @@ return(
           })}
         </nav>
       </div>
+      {/*Wraps all content in something that centers it to make it look nicer*/}
+      <div className="flex-1 overflow">
       {activeTab === 'home' && <Collection />}
       {activeTab === 'analytics' && <Stats />}
       {activeTab === 'download' && <DownloadCsv />}
+      </div>
     </div>
     );
 }
@@ -135,8 +138,9 @@ const Collection = () => {
     const [beds, setBeds] = useState(3);
     const [baths, setBaths] = useState(2);
     return (
-    <div className="p-8">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6">Search Rental Properties</h2>
+    <div className="flex items-center justify-center h-full w-full">
+    <div className="w-full max-w-2xl p-8">
+      <h2 className="text-center text-3xl font-bold text-gray-800 mb-6">Search Rental Properties</h2>
       
       <div className="bg-white border border-gray-200 rounded-lg p-6 max-w-2xl">
         <form 
@@ -151,7 +155,7 @@ const Collection = () => {
         >
           <div>
             <label htmlFor="pname" className="block text-sm font-medium text-gray-700 mb-2">
-              Location
+              Location:
             </label>
             <input 
               type="text" 
@@ -167,7 +171,7 @@ const Collection = () => {
 
           <div>
             <label htmlFor="beds" className="block text-sm font-medium text-gray-700 mb-2">
-              Bedrooms
+              Bedrooms:
             </label>
             <input 
               type="number" 
@@ -183,7 +187,7 @@ const Collection = () => {
 
           <div>
             <label htmlFor="baths" className="block text-sm font-medium text-gray-700 mb-2">
-              Bathrooms
+              Bathrooms:
             </label>
             <input 
               type="number" 
@@ -205,6 +209,7 @@ const Collection = () => {
           </button>
         </form>
       </div>
+    </div>
     </div>
   );
 
@@ -303,24 +308,82 @@ const Stats = () => {
 }
 
 const DownloadCsv = () => {
+  // CSV Download Function
+const handleCsvDownload = async () => {
+  try {
+    const response = await axios.get(API_URL + '/download-csv', {
+      responseType: 'blob' //This is IMPORTANT for file management
+    });
+    
+    // Generates Download url based off of response and append to document
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    // Sets the action of download and the file name to data.xlsx
+    link.setAttribute('download', 'data.csv');
+    document.body.appendChild(link);
+    // Simulates Clicking the link and then removes it
+    link.click();
+    link.remove();
+    // Removes through the window
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('csv Download failed:', error);
+  }
+};
+// Xlsx Download function
+const handleXlsxDownload = async () => {
+  try {
+    const response = await axios.get(API_URL + '/download-xlsx', {
+      responseType: 'blob'
+    });
+    
+    // Generates Download url based off of response and append to document
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    // Sets the action of download and the file name to data.xlsx
+    link.setAttribute('download', 'data.xlsx');
+    document.body.appendChild(link);
+    // Simulates Clicking the link and then removes it
+    link.click();
+    link.remove();
+    // Removes through the window
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('xlsx Download failed:', error);
+  }
+};
+
   return(
-    <div>
-      <a
-        href={CSV}
+    <div className="flex items-center justify-center h-full w-full">
+    <div className="w-full max-w-2xl p-8">
+       <div className="mb-12 text-center">
+        <h2 className="text-3xl font-bold text-gray-800">Download Data</h2>
+        <p className="text-gray-600 mt-3">Export data in your preferred format</p>
+      </div>
+       <div className="space-y-5">
+          <a
+        
         download="data"
         target="_blank"
         rel="noreferrer"
+        className="block"
       >
-        <button>Download as .csv</button>
+        <button onClick={handleCsvDownload} className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg transition-colors bg-gray-100 text-gray-900 hover:bg-gray-200 font-medium">Download as .csv</button>
       </a>
       <a
-        href={XLSX}
+        
         download="data"
         target="_blank"
         rel="noreferrer"
+        className="block"
       >
-        <button>Download as .xlsx</button>
+        <button onClick={handleXlsxDownload} className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg transition-colors bg-gray-100 text-gray-900 hover:bg-gray-200 font-medium">Download as .xlsx</button>
       </a>
+       </div>
+      
+    </div>
     </div>
   );
 }
