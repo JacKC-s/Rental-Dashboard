@@ -7,10 +7,10 @@ import { BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tool
 
 
 
-//TODO: Comment Confusing Code, finish out the project. Perhaps also add a way to know if it is scraping or not...
+//TODO: Add a way to know if it is scraping or not...
 
 // Gloabal Variables
-const API_URL = "http://192.168.86.34:4999";
+const API_URL = "http://192.168.86.27:4999";
 
 const data = [];
 var query = null;
@@ -22,7 +22,7 @@ const getScrapeData = async (location, beds, baths) => {
                 "beds": beds,
                 "baths": baths
             }
-    query = payload;
+    query = location + ", " + beds + " beds, " + baths + " baths";
     try {
         const response = await axios.post(API_URL + "/scrape", payload);
         const listings = response.data.data;
@@ -125,8 +125,10 @@ return(
       {/*Wraps all content in something that centers it to make it look nicer*/}
       <div className="flex-1 overflow">
       {activeTab === 'home' && <Collection />}
-      {activeTab === 'analytics' && <Stats />}
-      {activeTab === 'download' && <DownloadCsv />}
+      {/*Only displays the next two pages if there is data scraped.*/}
+      {activeTab === 'analytics' && (data.length > 1 ? <Stats /> : <EmptyState />)}
+      {activeTab === 'download' && (data.length > 1 ? <DownloadCsv /> : <EmptyState />)}
+      {activeTab === 'list' && (data.length > 1 ? <ListingsPanel /> : <EmptyState />)}
       </div>
     </div>
     );
@@ -205,7 +207,7 @@ const Collection = () => {
             type="submit"
             className="w-full px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
           >
-            Search Properties
+            Scrape Properties
           </button>
         </form>
       </div>
@@ -271,7 +273,7 @@ const Stats = () => {
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-gray-600 text-sm mb-2">Search Query</h3>
-          <p className="text-3xl font-bold text-gray-800">WIP</p>
+          <p className="text-3xl font-bold text-gray-800">{query}</p>
         </div>
       </div>
 
@@ -388,6 +390,33 @@ const handleXlsxDownload = async () => {
   );
 }
 
+// Empty state that activates when there is no data scraped
+const EmptyState = () => {
+  return (
+    <div className="flex items-center justify-center min-h-[200px] text-gray-600 text-base">
+      Nothing here yet :(
+    </div>
+  );
+}
+
+const ListingsPanel = () => {
+  return(
+    <ul id='homes-list' className="space-y-4 p-4">
+      {data.map((listing, index) => (
+        <li key={index} className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          <strong className="text-lg font-semibold text-gray-900 block mb-2">{listing.address}</strong>
+          <br />
+          <span className="text-gray-700 text-sm block mb-3">
+            ${listing.rent} ⋆ {listing.beds} bd ⋆ {listing.baths} bth ⋆ {listing.sqft} sqft
+          </span>
+          <a href={listing.link} target='_blank' className="inline-block px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition-colors">
+            View
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 const App = () => {
     return(
