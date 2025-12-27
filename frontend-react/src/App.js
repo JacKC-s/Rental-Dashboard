@@ -136,9 +136,11 @@ return(
 
 const Collection = () => {
     // Sets default States for data collection
+    const [isLoading, setisLoading] = useState(false);
     const [location, setLocation] = useState('Blacksburg_VA');
     const [beds, setBeds] = useState(3);
     const [baths, setBaths] = useState(2);
+
     return (
     <div className="flex items-center justify-center h-full w-full">
     <div className="w-full max-w-2xl p-8">
@@ -148,10 +150,13 @@ const Collection = () => {
         <form 
           id="scrape" 
           onSubmit={async (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
+            // Logic for allowing loading
+            setisLoading(true);
             await getScrapeData(location, beds, baths);
             convertCsv(data);
             convertXlsx(data);
+            setisLoading(false);
           }}
           className="space-y-6"
         >
@@ -207,7 +212,7 @@ const Collection = () => {
             type="submit"
             className="w-full px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
           >
-            Scrape Properties
+            {isLoading ? "Scraping properties..." : "Scrape Properties"}
           </button>
         </form>
       </div>
