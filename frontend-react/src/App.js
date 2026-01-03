@@ -9,8 +9,8 @@ import { BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tool
 
 //TODO: Add a way to know if it is scraping or not...
 
-// Gloabal Variables
-const API_URL = "http://192.168.86.27:4999";
+// Global Variables -> Changed to work with changing local ip (.env duplication for local development)
+const API_URL = process.env.REACT_APP_API_URL;
 
 const data = [];
 var query = null;

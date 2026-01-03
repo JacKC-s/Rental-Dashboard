@@ -5,11 +5,18 @@ import json
 from flask_cors import CORS
 import redis
 import io
+import os
+
 ## TODO I believe this is complete!
 
-# Intitializes Redis
-redis_host = 'localhost'
-redis_port = '6379'
+# Adding Docker Functionality, this creates absolute path derived from file location
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DOWNLOAD_DIR = os.path.join(BASE_DIR, "downloads")
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+
+# Intitializes Redis -> docker friendly 
+redis_host = os.getenv("REDIS_HOST", "localhost")
+redis_port = int(os.getenv("REDIS_PORT", 6379))
 
 r = redis.Redis(redis_host, redis_port, decode_responses=True)
 
@@ -71,8 +78,8 @@ def scrape():
 def convert_csv():
     data = request.get_json()
     df = pd.read_json(io.StringIO(json.dumps(data)))
-
-    df.to_csv('./backend/downloads/data.csv', encoding='utf-8', index=False)
+    # Using abs paths
+    df.to_csv(os.path.join(DOWNLOAD_DIR, "data.csv"), encoding='utf-8', index=False)
     return "Sent!"
 
 
@@ -81,8 +88,8 @@ def convert_xlsx():
     try:
         data = request.get_json()
         df = pd.read_json(io.StringIO(json.dumps(data)))
-
-        df.to_excel('./backend/downloads/data.xlsx')
+        # Using abs paths
+        df.to_excel(os.path.join(DOWNLOAD_DIR, "data.xlsx"))
         return "Sent!"
     except Exception as e:
         print(e) 
@@ -91,14 +98,14 @@ def convert_xlsx():
 @app.route('/download-csv', methods=['GET'])
 def download_csv():
     try:
-        return send_file('downloads/data.csv', as_attachment=True)
+        return send_file(os.path.join(DOWNLOAD_DIR, "data.csv"), as_attachment=True) # Download Abs paths
     except Exception as e:
         return(e)
 
 @app.route('/download-xlsx', methods=['GET'])
 def download_xlsx():
     try:
-        return send_file('downloads/data.xlsx', as_attachment=True)
+        return send_file(os.path.join(DOWNLOAD_DIR, "data.xlsx"), as_attachment=True)
     except Exception as e:
         return(e)
        
