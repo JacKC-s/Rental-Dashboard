@@ -48,7 +48,20 @@ sudo apt install nodejs npm</code>
 #### 6. Install xvfb
 <code>sudo apt install xvfb</code>
 
-#### 7. Run both <code>app.py</code> and <code>App.js</code>
+#### 7. Creating <code>.env</code> files
+* Create <code>.env</code> file in app root directory:
+<code>
+REACT_APP_API_URL=http://localhost:4999
+REDIS_HOST=redis
+REDIS_PORT=6379
+</code>
+
+* Create <code>.env</code> file in <code>frontend-react</code> directory:
+<code>
+REACT_APP_API_URL=http://localhost:4999
+</code>
+
+#### 8. Run both <code>app.py</code> and <code>App.js</code>
 * <code>python backend/app.py</code>
 * <code>cd frontend-react</code>
 * <code>npm start</code>
@@ -61,6 +74,7 @@ I would reccomend changing the User Interface a bit, but the scraper logic on th
 ## Known Issues
 There is an issue where the scraper sometimes pauses and doesn't return anything at the end. I believe this is due to something with memory, however this bug happens when I am not using X-org.
 
-## Thank you for reading and using this project!
+### Thank you for reading and using this project!
+A star would be appreciated because this is my first real project!
  
 
