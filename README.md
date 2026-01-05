@@ -50,16 +50,12 @@ sudo apt install nodejs npm</code>
 
 #### 7. Creating <code>.env</code> files
 * Create <code>.env</code> file in app root directory:
-<code>
-REACT_APP_API_URL=http://localhost:4999
-REDIS_HOST=redis
-REDIS_PORT=6379
-</code>
+    <code>REACT_APP_API_URL=http://localhost:4999
+    REDIS_HOST=redis
+    REDIS_PORT=6379</code>
 
 * Create <code>.env</code> file in <code>frontend-react</code> directory:
-<code>
-REACT_APP_API_URL=http://localhost:4999
-</code>
+    <code>REACT_APP_API_URL=http://localhost:4999</code>
 
 #### 8. Run both <code>app.py</code> and <code>App.js</code>
 * <code>python backend/app.py</code>
