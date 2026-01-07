@@ -4,7 +4,7 @@ services:
   frontend: 
     build: ./frontend-react
     ports: 
-      - "3000:3000"
+      - "3000:80" # Port 80 for nginx
     depends_on:
       - backend
     environment:
