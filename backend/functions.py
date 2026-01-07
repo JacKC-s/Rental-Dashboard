@@ -41,6 +41,10 @@ def make_url(location='Austin_TX', beds=None, baths=None):
 def scrape_url(url):
     # Setting up web driver
     options = Options()
+
+    # Finds chromium binary
+    chrome_bin = os.environ.get("CHROME_BIN", "/usr/bin/chromium")
+    options.binary_location = chrome_bin
     # Massively Speeds up scraping process
     options.page_load_strategy = 'eager'
 

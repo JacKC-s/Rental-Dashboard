@@ -1,11 +1,24 @@
 FROM python:3.11-slim
 
+# These are all dependencies to make this work
 RUN apt-get update && apt-get install -y \
+    chromium \
+    chromium-driver \
     xvfb \
-    x11-utils \ 
-    libgl1 \ 
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    libxshmfence1 \
     libglib2.0-0 \
+    fonts-liberation \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+
+# Enviro variable for use in python script -> Not using currently
+ENV CHROME_BIN=/usr/bin/chromium
 
 WORKDIR /app
 
