@@ -13,8 +13,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
 
-## TODO Remove xvfb in python script and make it run through xvfb in docker container
-# Start and stop XVFB
+## TODO should be good
+# Start and stop XVFB -> These are not used anymore, just for legacy
 def start_xvfb():
     process = subprocess.Popen(['Xvfb', ':99', '-screen', '0', '1920x1080x24'])
     os.environ['DISPLAY'] = ':99'
@@ -39,11 +39,6 @@ def make_url(location='Austin_TX', beds=None, baths=None):
 
 
 def scrape_url(url):
-    # Setting up headless display
-    xvfb = start_xvfb()
-    display = Display(visible=False, size=(1920, 1080))
-    display.start()
-
     # Setting up web driver
     options = Options()
     # Massively Speeds up scraping process
@@ -193,7 +188,6 @@ def scrape_url(url):
         end_time = t.perf_counter()
         print(f"Total Listings Captured: {len(results)} in {end_time - start_time:0.02f} seconds.")
         driver.quit()
-        stop_xvfb(xvfb)
 
     return results
             

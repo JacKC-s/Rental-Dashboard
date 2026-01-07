@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD python app.py
+CMD Xvfb :99 -screen 0 1920x1080x24 & python main.py
