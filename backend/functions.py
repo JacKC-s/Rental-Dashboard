@@ -13,8 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
 
-## TODO Perhaps fix the page scrolling behavior, and look into xvfb on x-org instead of hyprland
-
+## TODO Remove xvfb in python script and make it run through xvfb in docker container
 # Start and stop XVFB
 def start_xvfb():
     process = subprocess.Popen(['Xvfb', ':99', '-screen', '0', '1920x1080x24'])
