@@ -22,7 +22,8 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-  
+    shm_size: "2gb"
+
   redis: 
     image: redis:7-alpine
     ports:

@@ -44,7 +44,7 @@ def scrape_url(url):
     # Massively Speeds up scraping process
     options.page_load_strategy = 'eager'
 
-    driver = uc.Chrome(headless=False,use_subprocess=False, options=options)
+    driver = uc.Chrome(headless=False,use_subprocess=True, options=options)
     driver.get(url)
 
     # Measures speed of scraper
