@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  frontend: 
+    build: ./frontend-react
+    ports: 
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://backend:4999 # This was changed due to docker shenanigans
+    
+  backend:
+    build: ./backend
+    ports:
+      - "4999:4999"
+    depends_on:
+      - "redis"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  
+  redis: 
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"

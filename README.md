@@ -27,9 +27,23 @@ Page that allows you to download data as .csv or .xlsx format
 <img src="listings.png" width=850 height=800>
 
 Compiles listings into a simple list with buttons to redirect user to each listing on realtor.com. Will maybe add pictures in a future iteration
+## Installation instructions (with Docker)
+
+#### 1. git clone directory 
+<code>git clone https://github.com/JacKC-s/Rental-Dashboard</code>
+
+#### 2. Enter the directory
+<code>cd ./Rental-Dashboard</code>
+
+#### 3. Tweak docker-compose.yml (optional)
+
+#### 4. Run docker-compose.yml
+<code>docker compose up</code>
+
+### Now go to <code>http://localhost:3000</code> and the app should be running
+
 
 ## Installation instructions (without Docker)
-### Currently working on docker implementation for this project, however, currently must install more manually
 
 #### 1. Create directory
 #### 2. Create virtual environment
