@@ -2,7 +2,10 @@ version: "3.9"
 
 services:
   frontend: 
-    build: ./frontend-react
+    build: 
+      context: ./frontend-react
+      args:
+        REACT_APP_API_URL: http://backend:4999 # Added because of arguments
     ports: 
       - "3000:80" # Port 80 for nginx
     depends_on:
