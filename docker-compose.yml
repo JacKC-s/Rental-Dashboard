@@ -17,6 +17,9 @@ services:
     build: ./backend
     ports:
       - "4999:4999"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4 # -> This is to solve dns problem that script had
     depends_on:
       - "redis"
     environment:
