@@ -37,7 +37,7 @@ Compiles listings into a simple list with buttons to redirect user to each listi
 
 #### 3. Tweak docker-compose.yml (optional)
 
-#### 4. Run docker-compose.yml
+#### 4. Run docker compose
 <code>docker compose up</code>
 
 ### Now go to <code>http://localhost:3000</code> and the app should be running
