@@ -43,7 +43,7 @@ def scrape_url(url):
     options = Options()
 
     # Finds chromium binary
-    chrome_bin = os.environ.get("CHROME_BIN", "/usr/bin/chromium")
+    chrome_bin = os.environ.get("CHROME_BIN", "/usr/bin/google-chrome")
     options.binary_location = chrome_bin
     # Massively Speeds up scraping process
     options.page_load_strategy = 'eager'

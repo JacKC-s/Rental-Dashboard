@@ -1,10 +1,11 @@
 FROM python:3.11-slim
 
-# These are all dependencies to make this work
+# It was just straight chrome not the driver :(
 RUN apt-get update && apt-get install -y \
-    chromium \
-    chromium-driver \
-    xvfb \
+    wget \
+    gnupg \
+    ca-certificates \
+    fonts-liberation \
     libnss3 \
     libatk-bridge2.0-0 \
     libxdamage1 \
@@ -13,12 +14,20 @@ RUN apt-get update && apt-get install -y \
     libasound2 \
     libxshmfence1 \
     libglib2.0-0 \
-    fonts-liberation \
-    ca-certificates \
+    xvfb \
+    --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Enviro variable for use in python script -> Not using currently
-ENV CHROME_BIN=/usr/bin/chromium
+# Using wget to download chrome and get it set up
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# Enviro variable for use in python script
+ENV CHROME_BIN=/usr/bin/google-chrome
 
 WORKDIR /app
 
