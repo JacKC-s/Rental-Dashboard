@@ -1,5 +1,6 @@
 FROM python:3.11-slim
-
+# TODO so the xvfb is being weird now since there is no display in the docker container
+# Test with fake code to get a screenshot
 # It was just straight chrome not the driver :(
 RUN apt-get update && apt-get install -y \
     wget \
@@ -15,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     libxshmfence1 \
     libglib2.0-0 \
     xvfb \
+    xauth \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
