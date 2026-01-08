@@ -42,10 +42,8 @@ def scrape_url(url):
     # Setting up web driver
     options = Options()
 
-    # Finds chromium binary
-    chrome_bin = os.environ.get("CHROME_BIN", "/usr/bin/google-chrome")
-    options.binary_location = chrome_bin
     options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     # Massively Speeds up scraping process
     options.page_load_strategy = 'eager'
 
