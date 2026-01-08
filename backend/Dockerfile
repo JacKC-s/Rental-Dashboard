@@ -27,7 +27,7 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
     && rm google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 # You gotta have chrome and the chrome driver for this to work
-RUN wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/143.0.7499.192/chromedriver_linux64.zip \
+RUN wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/143.0.7499/chromedriver_linux64.zip \
     && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
     && chmod +x /usr/local/bin/chromedriver \
     && rm /tmp/chromedriver.zip    
