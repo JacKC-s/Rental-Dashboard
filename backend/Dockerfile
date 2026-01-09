@@ -1,12 +1,23 @@
-FROM python:3.11-slim
-# TODO so the xvfb is being weird now since there is no display in the docker container
-# Test with fake code to get a screenshot
+FROM python:3.11
+
+# Needed to add more fonts
 # It was just straight chrome not the driver :(
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
     ca-certificates \
     fonts-liberation \
+    fonts-liberation2 \
+    fonts-dejavu-core \
+    fonts-dejavu-extra \
+    fonts-freefont-ttf \
+    fonts-noto \
+    fonts-noto-cjk \
+    fonts-noto-color-emoji \
+    fonts-opensymbol \
+    fonts-symbola \
+    fonts-droid-fallback \
+    fonts-roboto \
     libnss3 \
     libatk-bridge2.0-0 \
     libxdamage1 \
@@ -27,6 +38,12 @@ RUN wget -qO /usr/share/keyrings/google-linux-signing-keyring.gpg https://dl.goo
 RUN apt-get update \
     && apt-get install -y google-chrome-stable \
     && rm -rf /var/lib/apt/lists/*
+RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f 1) \
+    && wget -q "https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}.0.7499.192/linux64/chromedriver-linux64.zip" -O /tmp/chromedriver.zip \
+    && unzip /tmp/chromedriver.zip -d /tmp/ \
+    && mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/ \
+    && chmod +x /usr/local/bin/chromedriver \
+    && rm -rf /tmp/chromedriver*
 
 WORKDIR /app
 
@@ -37,4 +54,4 @@ EXPOSE 4999
 
 COPY . .
 
-CMD Xvfb :99 -screen 0 1920x1080x24 & python app.py
+CMD ["/bin/bash", "-c", "Xvfb :99 -screen 0 1920x1080x24 & sleep 2 && export DISPLAY=:99 && python app.py"]

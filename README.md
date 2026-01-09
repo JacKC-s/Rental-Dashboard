@@ -27,7 +27,7 @@ Page that allows you to download data as .csv or .xlsx format
 <img src="listings.png" width=850 height=800>
 
 Compiles listings into a simple list with buttons to redirect user to each listing on realtor.com. Will maybe add pictures in a future iteration
-## Installation instructions (with Docker)
+## Installation instructions (with Docker) -> Currently broken, undetected_chromedriver has unexpected issues with current Docker environment
 
 #### 1. git clone directory 
 <code>git clone https://github.com/JacKC-s/Rental-Dashboard</code>
