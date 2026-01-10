@@ -11,7 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
-
+from selenium.webdriver.common.action_chains import ActionChains
 
 ## TODO should be good
 # Start and stop XVFB -> These are not used anymore, just for legacy
@@ -52,7 +52,9 @@ def scrape_url(url):
 
     # Measures speed of scraper
     start_time = t.perf_counter()
-
+    actions = ActionChains(driver)
+    for i in range(10):
+        actions.move_by_offset(1,1).perform()
     # Handles Error where closes instantly
     wait = WebDriverWait(driver, 15)
     wait.until(

@@ -31,6 +31,9 @@ RUN apt-get update && apt-get install -y \
     unzip \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
+# Maybe adding the proper time zone -> THIS WAS THE PROBLEM!!!!
+ENV TZ=America/New_York
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN wget -qO /usr/share/keyrings/google-linux-signing-keyring.gpg https://dl.google.com/linux/linux_signing_key.pub \
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux-signing-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" \

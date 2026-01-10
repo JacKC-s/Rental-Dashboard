@@ -59,7 +59,7 @@ def scrape():
             results = scrape_url(url)
 
             # Caches to redis
-            r.set(cache_key, json.dumps({'data': results}), ex=600)
+            r.set(cache_key, json.dumps({'data': results}), ex=3600)
 
         # Return results as a json string
         return jsonify({"status": "success",
