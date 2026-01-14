@@ -185,7 +185,7 @@ const Collection = () => {
               id="beds" 
               name="beds" 
               value={beds} 
-              onChange={(e) => setBeds(e.target.value)} 
+              onChange={(e) => setBeds(Number(e.target.value))} 
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               min="0"
@@ -201,7 +201,7 @@ const Collection = () => {
               id="baths" 
               name="baths" 
               value={baths} 
-              onChange={(e) => setBaths(e.target.value)} 
+              onChange={(e) => setBaths(Number(e.target.value))} 
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               min="0"
