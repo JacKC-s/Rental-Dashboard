@@ -246,16 +246,20 @@ const Stats = () => {
     // Gets bins and number of entries in bins
     for(let i = 0; i< rents.length; i++) {
         const bin = Math.floor(rents[i] / binSize) * binSize;
-        const label = `${bin}-${bin + binSize}`;
-        distribution[label] = (distribution[label] || 0) + 1;
+        // const label = `${bin}-${bin + binSize}`;
+        distribution[bin] = (distribution[bin] || 0) + 1;
         
     }
 
 
     // Maps chart data to a list that can be read by Barchart Class
     const chartData = Object.entries(distribution)
-    .map(([label, count]) => ({'label': label, 'count': count}));
-    console.log(chartData);
+    .map(Number)
+    .sort((a, b) => a - b)
+    .map(bin => ({
+      label: `${bin}-${bin + binSize}`,
+      count: distribution[bin]
+    }));
 
     // Statistical Analysis Page
     return(
