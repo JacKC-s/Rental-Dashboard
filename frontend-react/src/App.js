@@ -253,7 +253,7 @@ const Stats = () => {
 
 
     // Maps chart data to a list that can be read by Barchart Class
-    const chartData = Object.entries(distribution)
+    const chartData = Object.keys(distribution)
     .map(Number)
     .sort((a, b) => a - b)
     .map(bin => ({
