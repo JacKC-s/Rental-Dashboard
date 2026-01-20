@@ -41,12 +41,6 @@ RUN wget -qO /usr/share/keyrings/google-linux-signing-keyring.gpg https://dl.goo
 RUN apt-get update \
     && apt-get install -y google-chrome-stable \
     && rm -rf /var/lib/apt/lists/*
-RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f 1) \
-    && wget -q "https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}.0.7499.192/linux64/chromedriver-linux64.zip" -O /tmp/chromedriver.zip \
-    && unzip /tmp/chromedriver.zip -d /tmp/ \
-    && mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/ \
-    && chmod +x /usr/local/bin/chromedriver \
-    && rm -rf /tmp/chromedriver*
 
 WORKDIR /app
 
